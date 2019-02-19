@@ -52,54 +52,27 @@ a representação dos caractéres não imprimíveis.
 
 ##A.
 
-O ficheiro createSharedSecret-app.py permite fazer a divisão de um segredo por um grupo. Cada entidade do mesmo recebe parte de um “código” que e quando se efectua a reunião de algumas das partes ou mesmo de todas, é capaz de reconstruir o segredo. Assim, o input deste programa é constituído por quatro argumentos: o número de partes em que se vai dividir o segredo, o número de partes suficientes para a reconstrução do segredo, o identificador do segredo e a chave privada em base 64.
+O ficheiro *createSharedSecret-app.py* permite fazer a divisão de um segredo por um grupo. Cada entidade do mesmo recebe parte de um “código” que, quando combinadas, permitem
+a reconstrução do segredo que lhes deu origem. Assim, o input deste programa é constituído por quatro argumentos: o número de partes em que se vai dividir o segredo, o número 
+mínimo de partes para a reconstrução do segredo (quorum), o identificador do segredo e a chave privada em format Base64.
 
 Posto isto, para efectuar a divisão pretendida começou-se por gerar a chave privada, através do seguinte comando:
 
-`openssl gearas -aes128 -out key.pem 1024`
+`openssl genrsa -aes128 -out private-key.pem 1024`
 
-Por conseguinte, procedeu-se à divisão do segredo:
+usada pela aplicação para assinar as partes constituintes do segredo, através do seguinte certificado:
 
+`openssl req -key private-key.pem -new -x509 -days 365 -out mykey.cert`
 
-Depois, foi executado o comando para a chave gerada: 
-`python createSharedSecret-app.py  
+A invocação do seguinte comando permitiu efetuar a divisão do segredo "Agora temos um segredo extremamente confidencial" nas 8 partes pretendidas, com um quorum de 5:
+`python createSharedSecret-app.py 8 5 0 private-key.pem`.
 
-???
-
-
-
-##B.
-
-Antes de mais, comece-se por construir o certificado, que será útil na recuperação do segredo, associado à chave privada gerada, recorrendo ao comando:
-
-
-`openssl req -key key.pem -new -x509 -days 365 -out key.cert`
-
-Posto isto, pode-se então executar os programas *recoverSecretFromComponents-app.py* e *recoverSecretFromAllComponents-app.py*, registando-se o obtido para cada um deles:
-
-- *recoverSecretFromComponents-app.py* :
-
-
-
-
--*recoverSecretFromAllComponents-app.py*:
-
-
-
-Efectuando várias tentativas chegou-se à conclusão que o programa recoverSecretFromAllComponents-app.py precisa que se adicione o valor correspondente ao número de partes pelo qual o segredo foi dividido, não sendo capaz de recuperar o segredo se apenas lhe forem fornecidas as partes relativas ao quorum.
-
-
-Assim, enquanto o programa recoverSecretFromComponents-app.py para reconstruir o segredo exige, no mínimo, a quantidade definida como sendo o quorum, o outro programa em estudo necessita de todas as partes para reconstruir o mesmo.
-
-Deste modo poderá ser útil utilizar recoverSecretFromAllComponents-app.py em vez de recoverSecretFromComponents-app.py, uma vez que os esquemas de partilha/divisão de segredo permitem alcançar altos níveis de confidencialidade e confiabilidade, de acordo com as necessidades do segredo em causa.
-
-Aquando se pretender níveis quase absolutos de confidencialidade e confiabilidade é logicamente mais útil recorrer ao programa recoverSecretFromAllComponents-app.py.
-
-
+A recuperação do segredo inicial a partir das suas partes constituintes pode ser efetuada com recurso a *recoverSecretFromComponents-app.py* que permite a recuperação do 
+mesmo a partir de um sub-conjunto das partes, que deve ter no mínimo tantos elementos como o quorum (neste caso 5), ou com recurso a *recoverSecretFromAllComponents-app.py* que 
+exige a presença de todas as partes para recuperar o segredo original. Um cenário em que seria desejável a utilização deste último script seria o caso em que é necessário o 
+consentimento de todas as partes para gerar o segredo original, permitindo um maior nível de confiabilidade na recuperação do segredo.
 
 ### 3\. Authenticated Encryption
-
-
 
 #### Resposta à p ergunta P3.1
 
@@ -115,6 +88,7 @@ Seja a etiqueta associada ao segredo denotada por “lbl”
 - gethmac:
 
 
+```
 def cipher(ptxt,lbl):
 	ctxt = cifra(ptxt)
 	id = getTd()
@@ -130,8 +104,7 @@ id, lbl, ctxt = getcomponents(ctxt)
 		decifra(ctxt,id)
 	else:
 		return ‘Erro’
-
-
+```
 
 
 
