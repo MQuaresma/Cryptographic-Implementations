@@ -12,41 +12,39 @@ Segue-se as respostas às perguntas dos exercícios propostos na aula que decorr
 Após testar os comandos pedidos destaca-se, primeiramente, a diferença entre os comandos `head -c 1024 /dev/random | openssl enc -base64` e `head -c 1024 /dev/urandom | openssl enc -base64`. 
 
 
-Ao executar o primeiro comando notou-se que este não mostra qualquer output no terminal. Após alguma pesquisa, verificou-se que tal deve-se à falta de entropia disponível no sistema. Assim, quando o pool de entropia está vazio, operações de leitura são bloqueadas até que seja captado algum ruído adicional do ambiente, ficando o dispositivo até lá à espera.
+Ao executar o primeiro comando verifcou-se que este bloqueia temporariamente até devolver o número bytes requisitado (1024 neste caso). Isto deve-se à falta de entropia 
+disponível no sistema. Assim, quando o valor da entropia é inferior a um dado valor (threshold), operações de leitura são bloqueadas até que seja captado algum ruído 
+adicional do ambiente, ficando o dispositivo até lá à espera.
 
-Já o comando `head -c 1024 /dev/urandom | openssl enc -base64` não é bloquedo, respondendo de forma imediata, pois o mesmo reutiliza o pool interno para produzir mais bits pseudo-aleatórios, o que é menos seguro, podendo este ser vulnerável a ataques criptográficos, contudo é bastante mais rápido que o anterior.
+Já o comando `head -c 1024 /dev/urandom | openssl enc -base64` não bloqueia quando o nível de entropia é baixo, devolvendo um valor de forma imediata, pois o mesmo reutiliza o 
+pool interno para produzir mais bits pseudo-aleatórios, o que é menos seguro, podendo este ser vulnerável a ataques criptográficos, contudo é bastante mais rápido que o 
+anterior.
 
-Deste modo, apesar do `/dev/urandom` ser criptograficamente seguro, apenas deve ser considerado quando o desempenho obtido com o uso do `/dev/random/` não satisfizer os requisitos pretendidos pela aplicação em causa.
+Deste modo, apesar do `/dev/urandom` ser criptograficamente seguro, apenas deve ser considerado quando o desempenho obtido com o uso do `/dev/random/` não satisfizer os 
+requisitos pretendidos pela aplicação em causa.
 
-Em relação aos comandos em faltam, detentores de tamanhos de chaves menores que o primeiro comando aqui apresentado, observa-se que na execução dos mesmos já se obteve output. Note-se ainda que quanto maior o número de bytes que forem pedidos maior é a quantidade de tempo necessária para gerar o valor pedido. 
+Os restantes comandos, que envolvem valores de comprimento inferior a 1024 bytes, observa-se que a invocação dos mesmos devolve o resultado de maneira imediata. 
+Adicionalmente, quanto maior o número de bytes pedidos, maior é a quantidade de tempo necessária para gerar o valor pedido quando o gerador é `/dev/random`.
 
 
 #### Resposta à pergunta P1.2
 
-O haveged - <http://www.issihosts.com/haveged/index.html> - é um daemon de entropia adaptado do algoritmo HAVEGE (_HArdware Volatile Entropy Gathering and Expansion_) - <http://www.irisa.fr/caps/projects/hipsor/> -, cujo objetivo passa por corrigir condições de baixa entropia no dispositivo aleatório do Linux. O uso do mesmo aumenta assim a entropia do gerador usando fontes adicionais baseadas em características do hardware atual.
+O haveged - <http://www.issihosts.com/haveged/index.html> - é um daemon de entropia baseado no algoritmo HAVEGE (_HArdware Volatile Entropy Gathering and Expansion_) - 
+<http://www.irisa.fr/caps/projects/hipsor/> -, quem tem como objetivo passa por corrigir condições de baixa entropia no dispositivo aleatório do Linux. O uso do mesmo aumenta 
+assim a entropia do gerador usando fontes adicionais baseadas em características do hardware atual.
 
-Com a instalação da a package haveged e após testar novamente os comandos `head -c 1024 /dev/random | openssl enc -base64` e `head -c 1024 /dev/urandom | openssl enc -base64`, observa-se que comando `/dev/random` já apresenta output e que o tempo de execução do outro comando diminui.
+Com a instalação desta ferramenta, e após testar novamente os comandos `head -c 1024 /dev/random | openssl enc -base64` e `head -c 1024 /dev/urandom | openssl enc -base64`, 
+a diferença no tempo de resposta de ambos deixa de ser notória, diminuindo o tempo de resposta da fonte `dev/random`.
 
 #### Resposta à pergunta P1.3
 
-###1.
-
-Ao analisar o ficheiro *generateSecret-app.py* baseado no módulo eVotUM.Cripto (https://gitlab.com/eVotUM/Cripto-py) observa-se que a função generateSecret recorre ao módulo shamirsecret.py, e que  inicializa-se com um ciclo, seguido-se a geração de uma sequência de bytes pseudoaleatórios. Depois, a mesma verifica se cada um dos bytes é uma letra (string.ascii_letters) ou dígito (string.digits). Enquanto a condição de inicialização do ciclo for satisfeita, este processo repete-se. Quando o mesmo for interrompido procede-se à concatenação o byte com o segredo.
-
-Deste modo, facilmente se justifica o facto de o segredo gerado ser composto apenas por letras e números, pois a função referida filtra os valores obtidos para que o segredo contenha apenas caracteres pertencentes a string.ascii_letters e string.digits.
-
-
-###2. 
-
-Para não limitar o output a letras e dígitos obrigatoriamente é necessário modificar o código descrito acima
-
-ACABARRR
-
-
-
-
-
-
+Ao analisar o ficheiro *generateSecret-app.py* baseado no módulo eVotUM.Cripto (https://gitlab.com/eVotUM/Cripto-py) observa-se que a função `generateSecret` recorre ao módulo 
+*shamirsecret.py*. Neste módulo a função `generateSecret` gera uma sequência de bytes pseudoaleatórios e remove da mesma todos os caractéres que não satisfaçam a condição:
+`if c in (string.ascii_letters + string.digits)` **i.e.** que não sejam letras ou números. Enquanto o número de bytes que satisfizeram esta condição não for igual ao pedido
+(`l<secretLength`), este processo repete-se. Deste modo, facilmente se justifica o facto de o segredo gerado ser composto apenas por letras e números, pois a função referida 
+filtra os valores obtidos para que o segredo contenha apenas caracteres pertencentes a `string.ascii_letters` e `string.digits`.
+Esta limitição poderia ser facilmente ultrapassada removendo a condição que filtra os valores que não são números nem letras e convertendo o resultado para Base64 para permitir
+a representação dos caractéres não imprimíveis.
 
 ### 2\. Partilha/Divisão de segredo (Secret Sharing/Splitting)
 
