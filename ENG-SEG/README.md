@@ -50,8 +50,6 @@ a representação dos caractéres não imprimíveis.
 
 #### Resposta à pergunta P2.1
 
-##A.
-
 O ficheiro *createSharedSecret-app.py* permite fazer a divisão de um segredo por um grupo. Cada entidade do mesmo recebe parte de um “código” que, quando combinadas, permitem
 a reconstrução do segredo que lhes deu origem. Assim, o input deste programa é constituído por quatro argumentos: o número de partes em que se vai dividir o segredo, o número 
 mínimo de partes para a reconstrução do segredo (quorum), o identificador do segredo e a chave privada em format Base64.
@@ -74,20 +72,11 @@ consentimento de todas as partes para gerar o segredo original, permitindo um ma
 
 ### 3\. Authenticated Encryption
 
-#### Resposta à p ergunta P3.1
+#### Resposta à pergunta P3.1
 
-Antes de passar ao algoritmo pretendido, seguem-se as funções necessárias e respetivos input’s e output’s necessário à elaboração do mesmo.
-
-#Funções pré-definidas:
-
-- getID: função que recebe o identificador “ano.mes.dia” e retorna a chave privada associada ao mesmo
--getcomponets: função que retornou o lbl, o criptografia e o identificador
-Seja a etiqueta associada ao segredo denotada por “lbl”
--cifra: função responsável pela cifragem propriamente dita
--decifra: função responsável pela decifrarem propriamente dita
-- gethmac:
-
-
+Por forma a garantir a confidencialidade do segredo seria utilizada uma cifra que, combinado com um MAC num esquema Encrypt-then-MAC, aplicado sobre a etiqueta e o criptograma,
+permitira ainda garantir a integridade e autenticidade do mesmos. 
+A implementação deste algoritmo seguiria, portanto, a seguinte especificação:
 ```
 def cipher(ptxt,lbl):
 	ctxt = cifra(ptxt)
@@ -95,29 +84,20 @@ def cipher(ptxt,lbl):
 	res = hmac(id, lbl + ctxt) + lbl + ctxt
 	return res
 
-
-
 def decipher(ctxt):
-r_hmac = gethmac(ctxt)
-id, lbl, ctxt = getcomponents(ctxt)
-	if emac (id, lbl + ctxt) == r_hmac:
-		decifra(ctxt,id)
-	else:
-		return ‘Erro’
+    r_hmac = gethmac(ctxt)
+    id, lbl, ctxt = getcomponents(ctxt)
+    if hmac (id, lbl + ctxt) == r_hmac:
+        decifra(ctxt,id)
+    else:
+        return ‘Erro’
 ```
 
+em que:
 
-
-
-
-
-
-
-
-
-
-
-
+- `getID`: função que calcula o identificador “ano.mes.dia” para um dado criptograma, permitindo ao hardware gerar a chave para a cifra e para o MAC
+- `getcomponets`: função que retornou a etiqueta, o criptograma e o identificador
+- `gethmac`: função que extrai o hmac do texto cifrado
 
 ### 4\. Algoritmos e tamanhos de chaves
 
@@ -137,11 +117,6 @@ Analogamente obtém-se facilmente as informações pretendidas, i.e, que  algori
 
 
  e que o tamanho da chave é 
-
-
-
-
-
 
 
 
