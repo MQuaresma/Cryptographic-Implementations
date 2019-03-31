@@ -122,7 +122,7 @@ Adicionalmente, esta aplicação terá a intervenção de psicólogos e professo
 
 As credenciais de acesso dos alunos são disponibilizadas pelas escolas, que aderem à presente aplicação, e as credências de acesso dos especialistas sãos disponibilizadas pelos mesmos, no momento em que se disponibilizam para serem orientadores neste projeto.
 
-Cada aluno terá o seu perfil, acompanhado de informações básicas como: nome da escola, ano, turma, número de aluno, nome completo, nome de utilizador, *password*; e cada especialista será caracterizado por: nome completo, nome de utilizador, profissão e *password*.
+Cada aluno terá o seu perfil, acompanhado de informações básicas como: nome da escola, ano, turma, número de aluno, nome completo, nome de utilizador, endereço de *email*, foto, *password*; e cada especialista será caracterizado por: nome completo, nome de utilizador, profissão, endereço de *email* e *password*.
 
 Após a autenticação dos alunos, estes serão abordados com algumas questões, de modo a efetuar-se uma primeira triagem de opções, tanto vocacionais como de selecção do especialista que melhor o consegue acompanhar. Posteriormente, o aluno será convidado, pelo especialista que lhe foi atribuído, a efectuar determinados testes. 
 
