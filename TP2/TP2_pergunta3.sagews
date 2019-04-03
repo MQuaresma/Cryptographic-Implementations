@@ -1,24 +1,35 @@
-︠0a56b4c6-1a7c-4b05-ba53-4a2e46b83bacs︠
-n = ZZ.random_element(0,256);n
-︡cbc6cd4f-d245-47e1-b311-a8908f5b8273︡{"stdout":"134\n"}︡{"done":true}
-︠66503811-a67b-4910-b1c9-c91a8d13f66ds︠
-K = GF(2^n);K
-︡f8d9adab-a4a4-4ef6-b873-fa30734d2e68︡{"stdout":"Finite Field in z134 of size 2^134"}︡{"stdout":"\n"}︡{"done":true}
-︠619b4184-66a9-460f-a508-de2d72be5fdcs︠
-b = 5
-E = EllipticCurve(GF(2^n),[1,1,0,0,b]); E
-︡712ec852-597e-4b04-849e-a9ff570f0ceb︡{"stdout":"Elliptic Curve defined by y^2 + x*y = x^3 + x^2 + 1 over Finite Field in z134 of size 2^134\n"}︡{"done":true}
-︠ae7c4a26-30c7-401e-acc6-8183fa073809s︠
+︠baa7f9fa-a58b-4531-9298-510458c4644fs︠
+def __init__(n):
+    K = GF(2^n);
+    while True:
+        b = K.random_element()
+        E = EllipticCurve(K,[1,1,0,0,b]);
+        m = E.order()
+        lista_factores= list(factor(m))
+        l = len(lista_factores)
+        N = lista_factores[l-1][0]
+        if N >= 2^(n-1):
+            while True:
+                P = E.random_element()
+                Pord = P.order()
+                if Pord > N:
+                    h = Pord/N
+                    Q = h * P
+                    return P,Q
+︡a9d5b6f6-447f-4c9b-9dcf-d0cb82133548︡{"done":true}
+︠653f3c2c-cc67-4b8c-bed5-7051a1d276d3s︠
+__init__(1)
+︡dbc59c59-e04a-43d2-88c3-f572f6f4ec87︡{"stderr":"Error in lines 1-1\n"}︡{"stderr":"Traceback (most recent call last):\n  File \"/cocalc/lib/python2.7/site-packages/smc_sagews/sage_server.py\", line 1188, in execute\n    flags=compile_flags) in namespace, locals\n  File \"\", line 1, in <module>\n  File \"\", line 13, in __init__\n  File \"/ext/sage/sage-8.6_1804/local/lib/python2.7/site-packages/sage/schemes/elliptic_curves/ell_point.py\", line 3551, in order\n    return Integer(E.pari_curve().ellorder(self, ord))\n  File \"cypari2/auto_gen.pxi\", line 7504, in cypari2.gen.Gen_auto.ellorder\n  File \"cypari2/gen.pyx\", line 4996, in cypari2.gen.objtogen\n  File \"/ext/sage/sage-8.6_1804/local/lib/python2.7/site-packages/sage/schemes/elliptic_curves/ell_point.py\", line 431, in __pari__\n    return pari([self[0]/self[2], self[1]/self[2]])\n  File \"cypari2/pari_instance.pyx\", line 839, in cypari2.pari_instance.Pari.__call__\n  File \"cypari2/gen.pyx\", line 5028, in cypari2.gen.objtogen\n  File \"cypari2/gen.pyx\", line 4996, in cypari2.gen.objtogen\n  File \"sage/rings/finite_rings/integer_mod.pyx\", line 514, in sage.rings.finite_rings.integer_mod.IntegerMod_abstract.__pari__ (build/cythonized/sage/rings/finite_rings/integer_mod.c:7233)\n    return self.lift().__pari__().Mod(self.__modulus.sageInteger)\n  File \"cypari2/auto_gen.pxi\", line 196, in cypari2.gen.Gen_auto.Mod\nKeyboardInterrupt\n"}︡{"done":true}
+︠89972b76-9a81-42e4-8627-ab68b9fadfd1︠
 QQ.<x,y> = PolynomialRing(QQ,2)
 phi = y^2 + x*y + x^3 + x^2 +b
 ︡0c368909-39e9-4120-bba7-ea26e5eed0d4︡{"done":true}
 ︠424633bf-0976-4114-9e90-b62a3aa697f5︠
 
 ︡c3967973-843f-473d-8553-7b963a7bfbca︡
-︠853418fd-ac32-419c-a3aa-5549ee29bfc8s︠
-E.order()
-︡57c27faf-ff7e-440a-8fb7-3020fe2b01f7︡{"stdout":"3992316807\n"}︡{"done":true}
-︠ce6e1b8c-b62e-47a6-80f3-ca0ea60fa6b3s︠
+︠853418fd-ac32-419c-a3aa-5549ee29bfc8︠
+︡fe94a9e0-4aec-41b1-8403-6a3343f974f3︡
+︠ce6e1b8c-b62e-47a6-80f3-ca0ea60fa6b3︠
 P = E.random_point();P
 ︡805d7aa9-771f-4c31-95f1-0e8c8f991cb7︡{"stdout":"(571609279 : 1105047225 : 1)\n"}︡{"done":true}
 ︠aa9207cb-cb6d-4cff-8cad-49e53d7c76dcs︠
@@ -45,6 +56,7 @@ PA,PB
 kA*PB == kB*PA
 ︡99bd941a-56e8-4cdc-a74e-41b8bff2e489︡{"stdout":"True\n"}︡{"done":true}
 ︠368befbb-d8b4-48ae-97ec-342935d426d3︠
+
 
 
 
