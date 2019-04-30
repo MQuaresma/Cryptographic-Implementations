@@ -109,3 +109,6 @@ venv.bak/
 # JS
 **/node_modules
 **/*.p12
+
+**/.DS_Store
+**/._*
